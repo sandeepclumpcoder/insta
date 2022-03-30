@@ -1,19 +1,28 @@
 {
   "name": "userui",
   "version": "1.0.0",
-  "description": "create API for signup and login",
+  "description": "",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sandeepclumpcoder/instatool.git"
+  },
   "author": "sandeep vishwakarma",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sandeepclumpcoder/instatool/issues"
+  },
+  "homepage": "https://github.com/sandeepclumpcoder/instatool#readme",
   "dependencies": {
     "body-parser": "^1.19.2",
     "express": "^4.17.3",
+    "express-fileupload": "^1.3.1",
     "joi": "^17.6.0",
     "jsonwebtoken": "^8.5.1",
-    "mongo": "^0.1.0",
-    "mongodb": "^4.4.1"
+    "mongodb": "^4.4.1",
+    "random": "^3.0.6"
   }
 }

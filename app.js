@@ -3,6 +3,9 @@ const app = express();
 const bodyParser = require('body-parser');
 const joi = require('joi');
 const jwt = require('jsonwebtoken');
+const fileupload = require('express-fileupload');
+const random = require('random');
+
 
 const joiValidation = require('./src/joiValidator/validation');
 const dbConnection = require('./src/mongoConnection/connectionOfMongo');
@@ -10,7 +13,8 @@ const userVerify = require('./src/middleware/verifyUser');
 
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
+app.use(fileupload());
+app.use(express.static(__dirname + "/public"));
 
 // ALL User List
 
@@ -40,7 +44,7 @@ app.get('/api/v1/signup', async (req, res) => {
 
 // Sign Up Page For Create User
 
-app.post('/api/v1/signup',userVerify.validateToken,async (req, res) => {
+app.post('/api/v1/signup', userVerify.validateToken, async (req, res) => {
     try {
         const schema = joi.object({
             fullName: joi.string().required(),
@@ -49,11 +53,15 @@ app.post('/api/v1/signup',userVerify.validateToken,async (req, res) => {
             password: joi.string().min(4).max(8).required()
         });
         await joiValidation.validationBodyReq(schema, req.body);
+        let image = req.files.image;
+        let imageNewName = await saveImageInDirectory(image);
+
         const userData = {
             fullName: req.body.fullName,
             email: req.body.email,
             mobile: req.body.mobile,
-            password: req.body.password
+            password: req.body.password,
+            picture: imageNewName
         }
         let db = await dbConnection.connection();
         db.collection('users').insertOne(userData, (err, result) => {
@@ -78,13 +86,13 @@ app.post('/api/v1/signup',userVerify.validateToken,async (req, res) => {
 });
 
 
-app.get('/api/v1/login',(req, res) => {
+app.get('/api/v1/login', (req, res) => {
     res.send('hello');
 });
 
 // users login API
 
-app.post('/api/v1/login',async (req, res) => {
+app.post('/api/v1/login', async (req, res) => {
     try {
         const schema = joi.object({
             email: joi.string().email().required(),
@@ -132,6 +140,28 @@ app.post('/api/v1/login',async (req, res) => {
         console.log('users login error', error);
     }
 });
+
+// save image in Directory
+
+saveImageInDirectory = async (image) => {
+    return new Promise((resolve, reject) => {
+        const imageNameArray = image.name.split('.');
+        const imageExtantion = imageNameArray.slice(-1);
+        const todatsDate = new Date();
+        const imageNewName = todatsDate.getTime() + '' + random.int(1, 1000) + '.' + imageExtantion;
+        const uploadPath = __dirname + '/public/images/' + imageNewName;
+        image.mv(uploadPath, function (error, result) {
+            if (error) {
+                let response = {
+                    error: error
+                }
+                reject(response);
+            } else {
+                resolve(imageNewName);
+            }
+        });
+    });
+}
 
 // For server starting
 
