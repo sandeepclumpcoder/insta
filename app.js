@@ -1,172 +1,19 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
-const joi = require('joi');
-const jwt = require('jsonwebtoken');
-const fileupload = require('express-fileupload');
-const random = require('random');
-
-
-const joiValidation = require('./src/joiValidator/validation');
-const dbConnection = require('./src/mongoConnection/connectionOfMongo');
-const userVerify = require('./src/middleware/verifyUser');
+const mainRouter = require('./src/router/index');
 
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(fileupload());
-app.use(express.static(__dirname + "/public"));
 
-// ALL User List
+// calling to a mainRouter (index.js file)
 
-app.get('/api/v1/signup', async (req, res) => {
-    try {
-        let db = await dbConnection.connection();
-        db.collection('users').find({}).toArray((err, result) => {
-            if (err) {
-                let errorInfo = {
-                    err: err,
-                    message: "DB query error"
-                }
-                throw errorInfo;
-            } else {
-                let response = {
-                    Alluser: result,
-                }
-                res.statusCode = 200;
-                res.json(response);
-            }
-        });
-    } catch (error) {
-        console.log(error, "sign up error");
-    }
-});
+app.use('/user' , mainRouter);
 
-
-// Sign Up Page For Create User
-
-app.post('/api/v1/signup', userVerify.validateToken, async (req, res) => {
-    try {
-        const schema = joi.object({
-            fullName: joi.string().required(),
-            email: joi.string().email().required(),
-            mobile: joi.number().required(),
-            password: joi.string().min(4).max(8).required()
-        });
-        await joiValidation.validationBodyReq(schema, req.body);
-        let image = req.files.image;
-        let imageNewName = await saveImageInDirectory(image);
-
-        const userData = {
-            fullName: req.body.fullName,
-            email: req.body.email,
-            mobile: req.body.mobile,
-            password: req.body.password,
-            picture: imageNewName
-        }
-        let db = await dbConnection.connection();
-        db.collection('users').insertOne(userData, (err, result) => {
-            if (err) {
-                let errorInfo = {
-                    err: err,
-                    message: "DB query error"
-                }
-                throw errorInfo;
-            } else {
-                let response = {
-                    message: "successFullly created",
-                    statusCode: 201
-                }
-                res.statusCode = 201;
-                res.json(response);
-            }
-        });
-    } catch (error) {
-        console.log('sign up post error', error);
-    }
-});
-
-
-app.get('/api/v1/login', (req, res) => {
-    res.send('hello');
-});
-
-// users login API
-
-app.post('/api/v1/login', async (req, res) => {
-    try {
-        const schema = joi.object({
-            email: joi.string().email().required(),
-            password: joi.string().min(4).max(8).required()
-        });
-        await joiValidation.validationBodyReq(schema, req.body);
-        const userEmail = req.body.email;
-        const password = req.body.password;
-        let db = await dbConnection.connection();
-        db.collection('users').findOne({ email: userEmail, password: password }, (error, user) => {
-            if (error) {
-                let response = {
-                    error: error,
-                    message: 'db query error'
-                };
-                throw response;
-            } else {
-                if (user) {
-                    const token = jwt.sign(
-                        {
-                            email: user.email,
-                            userId: user._id,
-                        },
-                        "secret",
-                        {
-                            expiresIn: "2h"
-                        }
-                    );
-                    res.statusCode = 400;
-                    let response = {
-                        token: token,
-                        user
-                    };
-                    res.json(response);
-                } else {
-                    res.statusCode = 400;
-                    let response = {
-                        message: "invalid credentials"
-                    };
-                    res.json(response);
-                }
-            }
-        });
-    } catch (error) {
-        console.log('users login error', error);
-    }
-});
-
-// save image in Directory
-
-saveImageInDirectory = async (image) => {
-    return new Promise((resolve, reject) => {
-        const imageNameArray = image.name.split('.');
-        const imageExtantion = imageNameArray.slice(-1);
-        const todatsDate = new Date();
-        const imageNewName = todatsDate.getTime() + '' + random.int(1, 1000) + '.' + imageExtantion;
-        const uploadPath = __dirname + '/public/images/' + imageNewName;
-        image.mv(uploadPath, function (error, result) {
-            if (error) {
-                let response = {
-                    error: error
-                }
-                reject(response);
-            } else {
-                resolve(imageNewName);
-            }
-        });
-    });
-}
-
-// For server starting
+// For create server
 
 const port = 5000;
 
 app.listen(port, () => {
-    console.log('server started at', port);
+    console.log(`Server started successfully at ${port}`);
 });

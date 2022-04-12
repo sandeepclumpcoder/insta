@@ -1,20 +1,20 @@
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
+const JWT_SECRET = "clumpCoder"
 
-// middle ware for user authentication
+// Middleware: User verification____________________
 
-module.exports.validateToken = (req , res , next)=>{
+const fetchUser = async (req, res, next) => {
     try {
-        const token = req.header('authorization');
-        const tokenArray = token.split(' ');
+        let token = req.header("authorization");
+        let tokenArray = token.split(" ");
         const finalToken = tokenArray[1];
-        const decodeToken = jwt.verify(finalToken ,'secret');
-        req.userInfo = decodeToken;
-        req.token = finalToken
+        const data = jwt.verify(finalToken, JWT_SECRET);
+        req.user = data.user;
+        req.token = finalToken;
         next();
     } catch (error) {
-        res.json({
-            status: 401,
-            message : "invalid Token"
-        });
+        res.status(401).send({ error: "invaild token" })
     }
 }
+
+module.exports = fetchUser
