@@ -196,7 +196,6 @@ class UserController {
         try {
             const code = req.body.code;
             let otp = await otpModel.checkValidOtp(code);
-            console.log("otp", otp);
             if (!otp) {
                 res.statusCode = 400;
                 res.json({ error: "Invalid otp" })
@@ -211,13 +210,11 @@ class UserController {
                 } else {
                     const email = otp.email;
                     let user = await userModel.getUserByEmail(email);
-                    console.log("user", user);
                     const data = {
                         user: {
                             id: user._id,
                         },
                     };
-                    console.log("data", data);
                     let authToken = jwt.sign(data, JWT_SECRET, { expiresIn: "2h" });
                     res.json({
                         success: "true",

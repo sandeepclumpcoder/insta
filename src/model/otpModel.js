@@ -4,17 +4,18 @@ const dbConnection = require('../mongoConnection/connectionOfMongo');
 
 module.exports.createOtp = (data) => {
     return new Promise(async (resolve, reject) => {
-        let db = await dbConnection.connection();
-        db.collection('otp1').insertOne(data , (err, result) => {
-            if (err) {
-                let errorInfo = {
-                    err: err,
-                    message: "DB query error"
+        await dbConnection.connection(function (db) {
+            db.collection('otp1').insertOne(data, (err, result) => {
+                if (err) {
+                    let errorInfo = {
+                        err: err,
+                        message: "DB query error"
+                    }
+                    reject(errorInfo);
+                } else {
+                    resolve(result);
                 }
-                reject(errorInfo);
-            } else {
-                resolve(result);
-            }
+            });
         });
     })
 }
@@ -23,19 +24,20 @@ module.exports.createOtp = (data) => {
 
 module.exports.checkValidOtp = (otp) => {
     return new Promise(async (resolve, reject) => {
-        let db = await dbConnection.connection();
-        db.collection('otp1').findOne({code:otp},(err, result) => {
-            if (err) {
-                let errorInfo = {
-                    err: err,
-                    message: "DB query error"
+        await dbConnection.connection(function (db) {
+            db.collection('otp1').findOne({ code: otp }, (err, result) => {
+                if (err) {
+                    let errorInfo = {
+                        err: err,
+                        message: "DB query error"
+                    }
+                    console.log("err", err);
+                    reject(errorInfo);
+                } else {
+                    resolve(result);
+                    console.log("result");
                 }
-                console.log("err",err);
-                reject(errorInfo);
-            } else {
-                resolve(result);
-                console.log("result");
-            }
+            });
         });
     })
 }

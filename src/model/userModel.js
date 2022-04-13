@@ -4,17 +4,18 @@ const dbConnection = require('../mongoConnection/connectionOfMongo');
 
 module.exports.checkEmail = (email) => {
     return new Promise(async (resolve, reject) => {
-        let db = await dbConnection.connection();
-        db.collection('users1').findOne({ email }, (err, result) => {
-            if (err) {
-                let errorInfo = {
-                    err: err,
-                    message: "DB query error"
+        await dbConnection.connection(function (db) {
+            db.collection('users1').findOne({ email }, (err, result) => {
+                if (err) {
+                    let errorInfo = {
+                        err: err,
+                        message: "DB query error"
+                    }
+                    reject(errorInfo);
+                } else {
+                    resolve(result);
                 }
-                reject(errorInfo);
-            } else {
-                resolve(result);
-            }
+            });
         });
     })
 }
@@ -23,18 +24,19 @@ module.exports.checkEmail = (email) => {
 
 module.exports.createUser = (userData) => {
     return new Promise(async (resolve, reject) => {
-        let db = await dbConnection.connection();
-        db.collection('users1').insertOne(userData, (err, result) => {
-            if (err) {
-                let errorInfo = {
-                    err: err,
-                    message: "DB query error"
+        await dbConnection.connection(function (db) {
+            db.collection('users1').insertOne(userData, (err, result) => {
+                if (err) {
+                    let errorInfo = {
+                        err: err,
+                        message: "DB query error"
+                    }
+                    reject(errorInfo);
+                } else {
+                    resolve(true);
                 }
-                reject(errorInfo);
-            } else {
-                resolve(true);
-            }
-        });
+            });
+        })
     })
 }
 
@@ -42,17 +44,18 @@ module.exports.createUser = (userData) => {
 
 module.exports.getUserByEmail = (userEmail) => {
     return new Promise(async (resolve, reject) => {
-        let db = await dbConnection.connection();
-        db.collection('users1').findOne({ email: userEmail }, (error, result) => {
-            if (error) {
-                let response = {
-                    error: error,
-                    message: 'db query error'
-                };
-                reject(response);
-            } else {
-                resolve(result);
-            }
+        await dbConnection.connection(function (db) {
+            db.collection('users1').findOne({ email: userEmail }, (error, result) => {
+                if (error) {
+                    let response = {
+                        error: error,
+                        message: 'db query error'
+                    };
+                    reject(response);
+                } else {
+                    resolve(result);
+                }
+            });
         });
     });
 }
@@ -61,17 +64,18 @@ module.exports.getUserByEmail = (userEmail) => {
 
 module.exports.searchUser = (regex) => {
     return new Promise(async (resolve, reject) => {
-        let db = await dbConnection.connection();
-        db.collection('users1').find({ name: regex }).toArray((error, result) => {
-            if (error) {
-                let response = {
-                    error: error,
-                    message: 'db query error'
-                };
-                reject(response);
-            } else {
-                resolve(result);
-            }
+        await dbConnection.connection(function (db) {
+            db.collection('users1').find({ name: regex }).toArray((error, result) => {
+                if (error) {
+                    let response = {
+                        error: error,
+                        message: 'db query error'
+                    };
+                    reject(response);
+                } else {
+                    resolve(result);
+                }
+            });
         });
     });
 }
@@ -80,19 +84,20 @@ module.exports.searchUser = (regex) => {
 
 module.exports.updatePasswordById = (userId, password) => {
     return new Promise(async (resolve, reject) => {
-        let db = await dbConnection.connection();
-        db.collection('users1').updateOne({ "_id": userId }, { $set: { password: password } }, (error, result) => {
-            if (error) {
-                let response = {
-                    error: error,
-                    message: 'db query error'
-                };
-                console.log("error", error)
-                reject(response);
-            } else {
-                resolve(result);
-                console.log("result", result)
-            }
+        await dbConnection.connection(function (db) {
+            db.collection('users1').updateOne({ "_id": userId }, { $set: { password: password } }, (error, result) => {
+                if (error) {
+                    let response = {
+                        error: error,
+                        message: 'db query error'
+                    };
+                    console.log("error", error)
+                    reject(response);
+                } else {
+                    resolve(result);
+                    console.log("result", result)
+                }
+            });
         });
     });
 }
