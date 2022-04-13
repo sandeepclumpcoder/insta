@@ -78,20 +78,20 @@ module.exports.searchUser = (regex) => {
 
 // Reset password by id__________________________________
 
-module.exports.updatePasswordById = (userId,password) => {
+module.exports.updatePasswordById = (userId, password) => {
     return new Promise(async (resolve, reject) => {
         let db = await dbConnection.connection();
-        db.collection('users1').updateOne({"_id":userId},{$set:{ password:password}}, (error, result) => {
+        db.collection('users1').updateOne({ "_id": userId }, { $set: { password: password } }, (error, result) => {
             if (error) {
                 let response = {
                     error: error,
                     message: 'db query error'
                 };
-                console.log("error",error)
+                console.log("error", error)
                 reject(response);
             } else {
                 resolve(result);
-                console.log("result",result)
+                console.log("result", result)
             }
         });
     });
