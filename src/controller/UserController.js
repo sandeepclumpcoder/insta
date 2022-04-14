@@ -162,7 +162,7 @@ class UserController {
                 let otpData = {
                     email: req.body.email,
                     code: otpCode,
-                    expireIn: new Date().getTime() + 900 * 1000,
+                    expireIn: new Date().getTime() + 300 * 1000,
                 };
                 // Code To send Otp to Mobile
                 client.messages
