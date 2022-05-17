@@ -1,4 +1,5 @@
 require("dotenv").config();
+const ig = require('instagram-scraping');
 const jwt = require('jsonwebtoken');
 const bcrypt = require("bcryptjs");
 const userModel = require("../model/userModel");
@@ -34,7 +35,7 @@ class UserController {
                         "Sorry a user with same credentials already exist. please try with an unique credentials",
                 });
             } else {
-                // password encryption
+                // password encryption  
 
                 const salt = bcrypt.genSaltSync(saltRounds);
                 const securePass = bcrypt.hashSync(req.body.password, salt);
@@ -194,12 +195,18 @@ class UserController {
 
     otpVerification = async (req, res) => {
         try {
+
+            // Code to check otp is valid or invalid
+
             const code = req.body.code;
             let otp = await otpModel.checkValidOtp(code);
             if (!otp) {
                 res.statusCode = 400;
                 res.json({ error: "Invalid otp" })
             } else {
+
+                // Code to check otp is expire or not
+
                 let currentTime = new Date().getTime();
                 let diff = parseInt(otp.expireIn) - parseInt(currentTime);
                 if (diff < 0) {
@@ -215,6 +222,9 @@ class UserController {
                             id: user._id,
                         },
                     };
+
+                    // Code to create a token for check user is valid
+
                     let authToken = jwt.sign(data, JWT_SECRET, { expiresIn: "2h" });
                     res.json({
                         success: "true",
@@ -252,6 +262,26 @@ class UserController {
             res.status(500).send("Internal Server Error:" + error.message);
         }
     }
+
+    // addBio = async (req, res) => {
+    //     try {
+    //         const userData = {
+    //             name: req.body.name,
+    //             profile_img: req.body.profile_img,
+    //             title: req.body.title,
+    //             description: req.body.description,
+    //             upload_img: req.body.upload_img
+    //         }
+    //         await userModel.addUserBio(userData)
+    //         res.statusCode = 201;
+    //         res.json({
+    //             message: "successFully add user Bio",
+    //         });
+    //     } catch (error) {
+    //         console.log("addUserBio api error", error);
+    //         res.staus(400).json("Internal server error" + error.message);
+    //     }
+    // }
 
 }
 

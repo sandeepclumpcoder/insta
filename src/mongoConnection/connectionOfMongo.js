@@ -1,5 +1,5 @@
 const mongoClient = require('mongodb').MongoClient;
-const mongoUrl = process.env.MONGO_URL
+const mongoUrl = process.env.MONGO_URL  // Mongo Db url for connect mongodb
 const dbName = 'database1'
 
 // Code to connect Mongodb____________________________

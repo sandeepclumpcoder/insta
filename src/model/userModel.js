@@ -95,9 +95,29 @@ module.exports.updatePasswordById = (userId, password) => {
                     reject(response);
                 } else {
                     resolve(result);
-                    console.log("result", result)
                 }
             });
         });
     });
 }
+
+// Add user bio api___________________________________
+
+
+// module.exports.addUserBio = (userData) => {
+//     return new Promise(async (resolve, reject) => {
+//         await dbConnection.connection(function (db) {
+//             db.collection('userBio').insertOne(userData, (err, result) => {
+//                 if (err) {
+//                     let errorInfo = {
+//                         err: err,
+//                         message: "DB query error"
+//                     }
+//                     reject(errorInfo);
+//                 } else {
+//                     resolve(true);
+//                 }
+//             });
+//         })
+//     })
+// }

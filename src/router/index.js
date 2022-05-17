@@ -32,10 +32,12 @@ app.post('/forget-password', UserController.forgetPassword);
 
 app.post('/otp-verification', UserController.otpVerification);
 
-app.post('/reset-password',fatchUser, [
+app.post('/reset-password', fatchUser, [
     body("password", "password minimun length is 4 character").isLength({
         min: 4
     })
 ], UserController.resetPassword);
+
+// app.post('/user-bio' , UserController.addBio);
 
 module.exports = app;
