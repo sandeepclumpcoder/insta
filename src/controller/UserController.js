@@ -151,7 +151,6 @@ class UserController {
         try {
             const mobile = req.body.mobile;
             let userData = await userModel.getUserByMobile(mobile);
-            console.log("userData",userData)
             if (!userData) {
                 res.statusCode = 400;
                 res.json({
@@ -162,7 +161,7 @@ class UserController {
 
                 let otpCode = Math.floor(1000 + Math.random() * 9000);
                 let otpData = {
-                    email: req.body.email,
+                    email: userData.email,
                     code: otpCode,
                     expireIn: new Date().getTime() + 300 * 1000,
                 };

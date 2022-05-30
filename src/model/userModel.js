@@ -103,21 +103,43 @@ module.exports.updatePasswordById = (userId, password) => {
 
 // Add user bio api___________________________________
 
+module.exports.getUserByMobile = (mobile) => {
+    return new Promise(async (resolve, reject) => {
+        await dbConnection.connection(function (db) {
+            db.collection('users1').findOne({ mobile: mobile }, (error, result) => {
+                if (error) {
+                    let response = {
+                        error: error,
+                        message: 'db query error'
+                    };
+                    reject(response);
+                } else {
+                    resolve(result);
+                }
+            });
+        });
+    });
+}
 
-// module.exports.addUserBio = (userData) => {
-//     return new Promise(async (resolve, reject) => {
-//         await dbConnection.connection(function (db) {
-//             db.collection('userBio').insertOne(userData, (err, result) => {
-//                 if (err) {
-//                     let errorInfo = {
-//                         err: err,
-//                         message: "DB query error"
-//                     }
-//                     reject(errorInfo);
-//                 } else {
-//                     resolve(true);
-//                 }
-//             });
-//         })
-//     })
-// }
+
+
+// Add user bio api___________________________________
+
+
+module.exports.addUserBio = (userData) => {
+    return new Promise(async (resolve, reject) => {
+        await dbConnection.connection(function (db) {
+            db.collection('userBio').insertOne(userData, (err, result) => {
+                if (err) {
+                    let errorInfo = {
+                        err: err,
+                        message: "DB query error"
+                    }
+                    reject(errorInfo);
+                } else {
+                    resolve(true);
+                }
+            });
+        })
+    })
+}
