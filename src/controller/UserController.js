@@ -149,12 +149,13 @@ class UserController {
 
     forgetPassword = async (req, res) => {
         try {
-            const email = req.body.email;
-            let userData = await userModel.checkEmail(email);
+            const mobile = req.body.mobile;
+            let userData = await userModel.getUserByMobile(mobile);
+            console.log("userData",userData)
             if (!userData) {
                 res.statusCode = 400;
                 res.json({
-                    error: "Please Enter Valid email ID"
+                    error: "Please Enter Valid Mobile No."
                 });
             } else {
                 // Code to create otp
@@ -263,25 +264,25 @@ class UserController {
         }
     }
 
-    // addBio = async (req, res) => {
-    //     try {
-    //         const userData = {
-    //             name: req.body.name,
-    //             profile_img: req.body.profile_img,
-    //             title: req.body.title,
-    //             description: req.body.description,
-    //             upload_img: req.body.upload_img
-    //         }
-    //         await userModel.addUserBio(userData)
-    //         res.statusCode = 201;
-    //         res.json({
-    //             message: "successFully add user Bio",
-    //         });
-    //     } catch (error) {
-    //         console.log("addUserBio api error", error);
-    //         res.staus(400).json("Internal server error" + error.message);
-    //     }
-    // }
+    addBio = async (req, res) => {
+        try {
+            const userData = {
+                name: req.body.name,
+                profile_img: req.body.profile_img,
+                title: req.body.title,
+                description: req.body.description,
+                upload_img: req.body.upload_img
+            }
+            await userModel.addUserBio(userData)
+            res.statusCode = 201;
+            res.json({
+                message: "successFully add user Bio",
+            });
+        } catch (error) {
+            console.log("addUserBio api error", error);
+            res.staus(400).json("Internal server error" + error.message);
+        }
+    }
 
 }
 
