@@ -2,9 +2,11 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const mainRouter = require('./src/router/index');
+const fileUpload = require('express-fileupload')
 
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(fileUpload());
 
 // calling to a mainRouter (index.js file)
 

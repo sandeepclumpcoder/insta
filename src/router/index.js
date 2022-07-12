@@ -38,6 +38,6 @@ app.post('/reset-password', fatchUser, [
     })
 ], UserController.resetPassword);
 
-// app.post('/user-bio' , UserController.addBio);
+app.post('/user-bio' ,fatchUser,UserController.addBio);
 
 module.exports = app;

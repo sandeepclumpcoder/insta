@@ -126,10 +126,10 @@ module.exports.getUserByMobile = (mobile) => {
 // Add user bio api___________________________________
 
 
-module.exports.addUserBio = (userData) => {
+module.exports.addUserBio = (userId , data) => {
     return new Promise(async (resolve, reject) => {
         await dbConnection.connection(function (db) {
-            db.collection('userBio').insertOne(userData, (err, result) => {
+            db.collection('users1').update({'_id':userId},{$set: data} , (err, result) => {
                 if (err) {
                     let errorInfo = {
                         err: err,
@@ -143,3 +143,4 @@ module.exports.addUserBio = (userData) => {
         })
     })
 }
+

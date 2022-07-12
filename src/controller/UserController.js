@@ -11,7 +11,7 @@ const authToken = process.env.AUTH_TOKEN;
 const client = require("twilio")(accountSid, authToken);
 const JWT_SECRET = process.env.SECRET_KEY;
 const saltRounds = 10;
-
+const S3 = require('../middleware/S3')
 
 class UserController {
 
@@ -106,10 +106,10 @@ class UserController {
                 } else {
                     let data = {
                         user: {
-                            id: user.id
+                            id: user._id
                         }
                     }
-                    const token = jwt.sign(data, JWT_SECRET);
+                    const token = jwt.sign(data, JWT_SECRET, {expiresIn:'2h'});
                     res.statusCode = 200;
                     res.json({ token, message: "SuccessFully Logged In" });
                 }
@@ -263,26 +263,31 @@ class UserController {
         }
     }
 
+    // Add user bio API's
+
     addBio = async (req, res) => {
         try {
+            let userId = req.user.id;
+            userId = mongo.ObjectId(userId);
+
             const userData = {
-                name: req.body.name,
-                profile_img: req.body.profile_img,
                 title: req.body.title,
                 description: req.body.description,
-                upload_img: req.body.upload_img
+                image: null
             }
-            await userModel.addUserBio(userData)
+            let file = req.files.profileImage;
+            let imageUrl = await S3.uploadFile(file);
+            userData.image = imageUrl;
+            await userModel.addUserBio(userId , userData)
             res.statusCode = 201;
             res.json({
                 message: "successFully add user Bio",
             });
         } catch (error) {
             console.log("addUserBio api error", error);
-            res.staus(400).json("Internal server error" + error.message);
+            res.status(400).json("Internal server error" + error.message);
         }
     }
-
 }
 
 module.exports = new UserController();
